@@ -2,6 +2,8 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 using Unity.Collections;
+using GLTFast.Schema;
+using UnityEngine.SceneManagement;
 
 public class AvatarLoaderWithConstraint : NetworkBehaviour
 {
@@ -44,12 +46,17 @@ public class AvatarLoaderWithConstraint : NetworkBehaviour
                 participentData = new ParticipentData(button.NameField, NetworkManager.Singleton.LocalClientId, GetComponent<NetworkObject>());
                 SelectAvatarServerRpc(button.avatarIndex);
                 GetComponent<ScreenReceiver>().streamerIP = button.IP;
-                button.gameObject.SetActive(false);
+                button.DactivateUi();
                 setServerButtonsServerRpc(new NetworkObjectReference(GetComponent<NetworkObject>()), participentData.Name);
                 AssignChairServerRpc(new NetworkObjectReference(GetComponent<NetworkObject>()));
                 SetNameServerRpc(participentData.Name);
             }
         }
+    }
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     [ServerRpc(RequireOwnership = false)]
     void setServerButtonsServerRpc(NetworkObjectReference objRef, string name)

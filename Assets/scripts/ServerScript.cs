@@ -47,7 +47,7 @@ public class ServerScript : NetworkBehaviour
         Debug.Log($"[Server] kickParticipant called for client {ClientID}");
         NetworkManager.Singleton.DisconnectClient(ClientID);
     }
-    
+
     public void addButton(NetworkObjectReference networkObjectReference, string name)
     {
         Debug.Log($"[Server] Adding button for client {name}");
@@ -151,5 +151,16 @@ public class ServerScript : NetworkBehaviour
         {
             Debug.LogError($"[Server] Failed to retrieve NetworkObject for {name}");
         }
+    }
+    [ClientRpc]
+    void EndMeetingClientRpc()
+    {
+        Debug.Log("[Client] EndMeetingClientRpc called");
+        NetworkManager.Singleton.Shutdown();
+    }
+    public void EndMeet()
+    {
+        NetworkManager.Singleton.Shutdown();
+        EndMeetingClientRpc();
     }
 }

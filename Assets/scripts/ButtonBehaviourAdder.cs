@@ -11,6 +11,7 @@ using Unity.Services.Relay.Models;
 using Unity.Services.Vivox;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Android;
 
 public class ButtonBehaviourAdder : MonoBehaviour
 {
@@ -25,8 +26,11 @@ public class ButtonBehaviourAdder : MonoBehaviour
     public int avatarIndex = 0;
     [SerializeField] GameObject joiningCanvas;
     [SerializeField] GameObject WarningCanvas;
+    [SerializeField] GameObject [] GameObjects;
     public string IP;
-
+    const string NEARBY_WIFI_DEVICES = "android.permission.NEARBY_WIFI_DEVICES";
+    const string BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
+    const string BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
     async void Start()
     {
         AvatarUrl.text = FindAnyObjectByType<UrlLink>().getUrl();
@@ -40,8 +44,22 @@ public class ButtonBehaviourAdder : MonoBehaviour
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             await VivoxService.Instance.InitializeAsync();
         }
-
-
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        {
+            Permission.RequestUserPermission(Permission.Microphone);
+        }
+        if (!Permission.HasUserAuthorizedPermission(NEARBY_WIFI_DEVICES))
+        {
+            Permission.RequestUserPermission(NEARBY_WIFI_DEVICES);
+        }
+        if (!Permission.HasUserAuthorizedPermission(BLUETOOTH_SCAN))
+        {
+            Permission.RequestUserPermission(BLUETOOTH_SCAN);
+        }
+        if (!Permission.HasUserAuthorizedPermission(BLUETOOTH_CONNECT))
+        {
+            Permission.RequestUserPermission(BLUETOOTH_CONNECT);
+        }
         Debug.Log("Vivox SDK Initialized");
         buttonHost.onClick.AddListener(CreateRelayAndStartHost);
         buttonClient.onClick.AddListener(() => JoinRelayAndStartClient(codeInputField.text));
@@ -174,5 +192,13 @@ public class ButtonBehaviourAdder : MonoBehaviour
     public void SetIP(string ip)
     {
         IP = ip;
+    }
+    public void DactivateUi()
+    {
+        foreach(var Object in GameObjects)
+        {
+            Object.SetActive(false);
+        }
+        gameObject.SetActive(false);
     }
 }
