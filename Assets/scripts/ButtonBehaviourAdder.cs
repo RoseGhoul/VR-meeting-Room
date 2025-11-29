@@ -33,6 +33,7 @@ public class ButtonBehaviourAdder : MonoBehaviour
     const string BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
     async void Start()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         AvatarUrl.text = FindAnyObjectByType<UrlLink>().getUrl();
         if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
         {
