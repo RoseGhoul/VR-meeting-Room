@@ -56,6 +56,7 @@ public class AvatarLoaderWithConstraint : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+        
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     [ServerRpc(RequireOwnership = false)]

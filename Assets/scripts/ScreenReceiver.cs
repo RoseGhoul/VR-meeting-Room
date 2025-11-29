@@ -166,7 +166,7 @@ public class ScreenReceiver : NetworkBehaviour
             int chunkSize = Math.Min(MaxChunkSize, data.Length - i * MaxChunkSize);
             byte[] chunk = new byte[chunkSize];
             Buffer.BlockCopy(data, i * MaxChunkSize, chunk, 0, chunkSize);
-            SendFrameChunkServerRpc(chunk, i, totalChunks, NetworkManager.Singleton.LocalClientId,new NetworkObjectReference(this.NetworkObject));
+            SendFrameChunkServerRpc(chunk, i, totalChunks, NetworkManager.Singleton.LocalClientId, new NetworkObjectReference(this.NetworkObject));
         }
     }
 
@@ -195,7 +195,7 @@ public class ScreenReceiver : NetworkBehaviour
             ScreenReceiver receiver = networkObjectReference.TryGet(out NetworkObject netObj) ? netObj.GetComponent<ScreenReceiver>() : null;
             if (receiver != null)
             {
-                if(receiver.displayTexture.LoadImage(image))
+                if (receiver.displayTexture.LoadImage(image))
                 {
                     receiver.displayTexture.Apply();
                     if (receiver.rawImage != null)
@@ -224,8 +224,13 @@ public class ScreenReceiver : NetworkBehaviour
     [ClientRpc]
     void BroadcastFrameChunkClientRpc(byte[] chunk, int chunkIndex, int totalChunks, ulong originClientId)
     {
-        if (originClientId != NetworkManager.Singleton.LocalClientId)
+        // Skip if this client is the one who sent the frame (already have it locally)
+        if (originClientId == NetworkManager.Singleton.LocalClientId)
+        {
             return;
+        }
+
+        Debug.Log($"[Client {NetworkManager.Singleton.LocalClientId}] Receiving chunk {chunkIndex}/{totalChunks} from client {originClientId}");
 
         if (!assemblers.TryGetValue(originClientId, out FrameAssembler fa))
         {

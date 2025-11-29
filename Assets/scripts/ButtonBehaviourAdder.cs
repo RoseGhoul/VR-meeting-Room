@@ -45,6 +45,10 @@ public class ButtonBehaviourAdder : MonoBehaviour
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
             await VivoxService.Instance.InitializeAsync();
         }
+        else
+        {
+            await VivoxService.Instance.LogoutAsync();
+        }
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
         {
             Permission.RequestUserPermission(Permission.Microphone);
